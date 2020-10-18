@@ -7,7 +7,7 @@ const makeSubject = require('callbag-subject');
 import subscribe from 'callbag-subscribe';
 
 import { trace, change } from '../trace';
-import { makeState } from '../../state';
+import { makeState } from '../state';
 
 
 describe('trace()', () => {

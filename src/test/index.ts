@@ -1,4 +1,4 @@
 describe('callbag-state', () => {
   require('./state.test');
-  require('../util/test');
+  require('./trace.test');
 });

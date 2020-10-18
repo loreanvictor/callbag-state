@@ -3,7 +3,7 @@ import { Sink } from 'callbag';
 import { subDownstream, subUpstream } from './substream';
 import { State, Downstream, Upstream, MsgType, _Start, _Data, _End, Change } from './types';
 import { broadcast } from './util/broadcast';
-import { postTrace } from './util/trace';
+import { postTrace } from './trace';
 
 
 export function makeState<T>(

@@ -1,4 +1,4 @@
-import { isLeaf, ChangeTrace, Change } from '../types';
+import { isLeaf, ChangeTrace, Change } from './types';
 
 
 function isRaw(v: any) {

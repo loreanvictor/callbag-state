@@ -197,6 +197,40 @@ describe('state', () => {
     ]);
   });
 
+  it('should properly handle subscribers unsubscribing.', done => {
+    const s = makeState(undefined, (t: any, d: any) => {
+      if (t === 0) {
+        d(0, (_t: any) => {
+          if (_t === 2) {done();}
+        });
+      }
+    }, () => {});
+
+    const s1 = subscribe(() => {})(s);
+    const s2 = subscribe(() => {})(s);
+    s1();
+    s2();
+  });
+
+  it('should ignore non-start messages on its downstream.', () => {
+    state(2).downstream()(1);
+  });
+
+  it('should be ok with subscribers mistakenly unsubbing multiple times.', () => {
+    const s = state(42);
+    const s1 = subscribe(() => {})(s);
+    s1(); s1();
+  });
+
+  it('should handle weird messages from downstream.', () => {
+    const d = makeSubject();
+    subscribe(() => {})(makeState(42, d, () => {}));
+
+    d(23);
+  });
+
+  it('should handle weird messages.', () => { state(42)(42 as any); });
+
   describe('.sub()', () => {
     it('should set the initial value correctly based given key and its own value.', () => {
       state('hellow').sub(1).get()!!.should.equal('e');
