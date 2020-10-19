@@ -150,7 +150,8 @@ s.sub(s.get().length).set(5)
 
 ## Contribution
 
-Be nice and respectful, more importantly super open and welcoming to all. Useful commands for working on this repo:
+Be nice and respectful, more importantly super open and welcoming to all. \
+👉 Useful commands for working on this repo:
 ```bash
 git clone https://github.com/loreanvictor/callbag-state.git
 ```
