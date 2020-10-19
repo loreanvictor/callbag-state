@@ -10,10 +10,14 @@ const makeSubject = require('callbag-subject');
 
 import { state } from '../index';
 import { makeState } from '../state';
-import { Change } from '../types';
+import { Change, isState } from '../types';
 
 
 describe('state', () => {
+  it('should pass `isState()` test', () => {
+    isState(state(2)).should.be.true;
+  });
+
   it('should initialize with given initial value.', () => {
     const s = state(42);
     s.get()!!.should.equal(42);

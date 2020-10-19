@@ -1,4 +1,4 @@
-import { Source, Sink, START, DATA, END } from 'callbag';
+import { Source, Sink, START, DATA, END, Callbag } from 'callbag';
 
 
 export type ChangeTraceLeaf<T> = {
@@ -36,6 +36,17 @@ export type State<T> = Source<T | undefined> & Sink<T> & {
   upstream(): Upstream<T>;
   sub<K extends keyof T>(key: K): State<T[K]>;
 };
+
+export function isState<T>(cb: Callbag<any, T>): cb is State<T> {
+  return cb && typeof cb === 'function' && cb.length === 2
+    && (cb as any).get && typeof (cb as any).get === 'function' && (cb as any).get.length === 0
+    && (cb as any).set && typeof (cb as any).set === 'function' && (cb as any).set.length === 1
+    && (cb as any).clear && typeof (cb as any).clear === 'function' && (cb as any).clear.length === 0
+    && (cb as any).downstream && typeof (cb as any).downstream === 'function' && (cb as any).downstream.length === 0
+    && (cb as any).upstream && typeof (cb as any).upstream === 'function' && (cb as any).upstream.length === 0
+    && (cb as any).sub && typeof (cb as any).sub === 'function' && (cb as any).sub.length === 1
+    ;
+}
 
 export const _Start = 0;
 export const _Data = 1;

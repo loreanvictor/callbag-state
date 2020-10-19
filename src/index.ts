@@ -1,6 +1,11 @@
 export { makeState } from './state';
 export { trace, change, postTrace } from './trace';
-export { Change, ChangeTrace, ChangeTraceLeaf, ChangeTraceNode, isLeaf, Downstream, Upstream, State } from './types';
+export {
+  Change, ChangeTrace,
+  ChangeTraceLeaf, ChangeTraceNode, isLeaf,
+  Downstream, Upstream,
+  State, isState
+} from './types';
 
 
 import { makeState } from './state';
