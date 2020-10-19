@@ -135,12 +135,12 @@ const s = state([1, 2, 3, 4])
 s.get().push(5);              // --> no updates
 ```
 ```ts
-// RIGHT:
+// CORRECT:
 const s = state([1, 2, 3, 4])
 s.set([...s.get(), 5]);
 ```
 ```ts
-// FUN BUT STILL RIGHT:
+// FUN & CORRECT:
 const s = state([1, 2, 3, 4])
 s.sub(s.get().length).set(5)
 ```
@@ -150,7 +150,8 @@ s.sub(s.get().length).set(5)
 
 ## Contribution
 
-Be nice and respectful, more importantly super open and welcoming to all. \
+Be nice and respectful, more importantly super open and welcoming to all.
+
 👉 Useful commands for working on this repo:
 ```bash
 git clone https://github.com/loreanvictor/callbag-state.git
