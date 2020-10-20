@@ -245,7 +245,11 @@ describe('state', () => {
     });
 
     it('should set the initial value to `undefined` when its own value is `undefined`.', () => {
-      expect(state<never[]>(undefined).sub(1).get()).to.be.undefined;
+      expect(state<never[]>(undefined as never).sub(1).get()).to.be.undefined;
+    });
+
+    it('should set initial value of sub substates to `undefined` when the subs are not defined.', () => {
+      expect(state<{x: number}[]>([]).sub(1).sub('x').get()).to.be.undefined;
     });
 
     it('should add proper trace to changes coming from sub-state upstream.', done => {

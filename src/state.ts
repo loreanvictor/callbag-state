@@ -1,16 +1,19 @@
 import { Sink } from 'callbag';
 
 import { subDownstream, subUpstream } from './substream';
-import { State, Downstream, Upstream, MsgType, _Start, _Data, _End, Change } from './types';
+import { State, Downstream, Upstream, MsgType, _Start, _Data, _End, Change, SubState } from './types';
 import { broadcast } from './util/broadcast';
 import { postTrace } from './trace';
 
 
+export function makeState<T>(initial: T, downstream: Downstream<T>, upstream: Upstream<T>): State<T>;
+export function makeState<T, K extends keyof T>
+  (initial: T[K] | undefined, downstream: Downstream<T[K] | undefined>, upstream: Upstream<T[K]>): SubState<T, K>;
 export function makeState<T>(
-  initial: T | undefined,
+  initial: T,
   downstream: Downstream<T>,
   upstream: Upstream<T>,
-): State<T> {
+) {
   const sinks: Sink<Change<T>>[] = [];
   let value = initial;
   let talkback: any = undefined;
@@ -39,7 +42,7 @@ export function makeState<T>(
           if (t === _Start) { talkback = _m; }
           else if (t === _Data) {
             const change = postTrace<T>(_m);
-            if (change.value !== value) { value = change.value; }
+            if (change.value !== value) { value = change.value!!; }
             broadcast(_Data, change, sinks);
           } else if (t === _End) { terminate(_m); }
         });
@@ -69,8 +72,8 @@ export function makeState<T>(
   _state.downstream = () => _downstream;
   _state.upstream = () => upstream;
   _state.sub = <K extends keyof T>(k: K) => {
-    const _sub: State<T[K]> = makeState(
-      value ? value[k] : undefined,
+    const _sub: SubState<T, K> = makeState(
+      value? value[k] : undefined,
       subDownstream(_downstream, k, () => _sub.get()),
       subUpstream(upstream, k, value),
     );

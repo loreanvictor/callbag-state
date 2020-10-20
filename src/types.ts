@@ -1,4 +1,4 @@
-import { Source, Sink, START, DATA, END, Callbag } from 'callbag';
+import { Source, Sink, START, DATA, END } from 'callbag';
 
 
 export type ChangeTraceLeaf<T> = {
@@ -7,7 +7,7 @@ export type ChangeTraceLeaf<T> = {
 };
 
 export type ChangeTraceNode<T> = {
-  subs: (T extends any[] ? {
+  subs: (T extends Array<unknown>? {
     [index: number]: ChangeTrace<T[number]> } :
     Partial<{[K in keyof T]: ChangeTrace<T[K]>}>) | {}
 };
@@ -28,16 +28,25 @@ export type Upstream<T> = Sink<Change<T>>;
 
 export type MsgType = START | DATA | END ;
 
-export type State<T> = Source<T | undefined> & Sink<T> & {
-  get(): T | undefined;
+export type SubState<T, K extends keyof T> = Source<T[K] | undefined> & Sink<T[K]> & {
+  get(): T[K] | undefined;
+  set(t: T[K]): void;
+  clear(): void;
+  downstream(): Downstream<T[K] | undefined>;
+  upstream(): Upstream<T[K]>;
+  sub<K2 extends keyof T[K]>(key: K2): SubState<T[K], K2>;
+};
+
+export type State<T> = Source<T> & Sink<T> & {
+  get(): T;
   set(t: T): void;
   clear(): void;
   downstream(): Downstream<T>;
   upstream(): Upstream<T>;
-  sub<K extends keyof T>(key: K): State<T[K]>;
+  sub<K extends keyof T>(key: K): SubState<T, K>;
 };
 
-export function isState<T>(cb: Callbag<any, T>): cb is State<T> {
+export function isState<T>(cb: Source<T>): cb is State<T> {
   return cb && typeof cb === 'function' && cb.length === 2
     && (cb as any).get && typeof (cb as any).get === 'function' && (cb as any).get.length === 0
     && (cb as any).set && typeof (cb as any).set === 'function' && (cb as any).set.length === 1
