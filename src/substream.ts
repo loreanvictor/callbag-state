@@ -6,11 +6,8 @@ export function subDownstream<T, K extends keyof T>(src: Downstream<T>, key: K, 
 : Downstream<T[K] | undefined> {
   return ((start: START, sink: Sink<Change<T[K] | undefined>>) => {
     if (start !== _Start) { return; }
-    let talkback: any = undefined;
-
     src(_Start, (t: MsgType, m?: any) => {
-      if (t === _Start) { talkback = m; }
-      else if (t === _Data) {
+      if (t === _Data) {
         const change = m as Change<T>;
         const value = change.value ? change.value[key] : undefined;
         if (
@@ -22,10 +19,8 @@ export function subDownstream<T, K extends keyof T>(src: Downstream<T>, key: K, 
             trace: isLeaf(change.trace) ? undefined : ((change.trace as ChangeTraceNode<T>).subs as any)[key]
           });
         }
-      } else if (t === _End) { sink(_End, m); }
+      } else { sink(t as any, m); }
     });
-
-    sink(_Start, (t: MsgType, m?: any) => { if (talkback) { talkback(t, m); } });
   }) as any;
 }
 
