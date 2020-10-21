@@ -1,6 +1,6 @@
 {
   "name": "callbag-state",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Callbag-based State Management",
   "main": "dist/es5/index.js",
   "module": "dist/es6/index.js",

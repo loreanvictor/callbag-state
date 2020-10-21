@@ -33,14 +33,14 @@ describe('state', () => {
     })(s);
   });
 
-  it('should track its most recent values if is root state and is subscribed to.', () => {
+  it('should track its most recent values if is root state.', () => {
     const s = state(41);
     s.get()!!.should.equal(41);
     s.set(42);
-    s.get()!!.should.equal(41);    // --> no update
-    subscribe(() => {})(s);
-    s.set(42);
     s.get()!!.should.equal(42);
+    subscribe(() => {})(s);
+    s.set(43);
+    s.get()!!.should.equal(43);
   });
 
   it('should emit its values when root state.', () => {
@@ -74,15 +74,15 @@ describe('state', () => {
     r.should.eql([42, 43, 44]);
   });
 
-  it('should keep its value in sync with latest incoming changes from downstream when subscribed to.', () => {
+  it('should keep its value in sync with latest incoming changes from downstream.', () => {
     const d = makeSubject();
     const s = makeState(42, d, () => {});
     s.get()!!.should.equal(42);
     d(1, { value: 43, trace: { from: 42, to: 43 } });
-    s.get()!!.should.equal(42);                 // --> not subscribed, not in sync
-    subscribe(() => {})(s);
-    d(1, { value: 43, trace: { from: 42, to: 43 } });
     s.get()!!.should.equal(43);
+    subscribe(() => {})(s);
+    d(1, { value: 44, trace: { from: 43, to: 44 } });
+    s.get()!!.should.equal(44);
   });
 
   it('should send received values up its upstream.', () => {
@@ -201,7 +201,7 @@ describe('state', () => {
     ]);
   });
 
-  it('should properly handle subscribers unsubscribing.', done => {
+  it('should unsubscribe from downstream when cleared.', done => {
     const s = makeState(undefined, (t: any, d: any) => {
       if (t === 0) {
         d(0, (_t: any) => {
@@ -210,10 +210,7 @@ describe('state', () => {
       }
     }, () => {});
 
-    const s1 = subscribe(() => {})(s);
-    const s2 = subscribe(() => {})(s);
-    s1();
-    s2();
+    s.clear();
   });
 
   it('should ignore non-start messages on its downstream.', () => {
