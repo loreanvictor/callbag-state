@@ -107,6 +107,8 @@ s.set([5, 2, 3, 4, 1]);
 ```
 [► TRY IT!](https://stackblitz.com/edit/callbag-state-demo6?devtoolsheight=33&embed=1&file=index.ts)
 
+<br><br>
+
 ## Gotchas
 
 ⚠️⚠️ Don't change an object without changing its reference:
@@ -128,6 +130,25 @@ s.sub(s.get().length).set(5)
 [► TRY IT!](https://stackblitz.com/edit/callbag-state-demo5?devtoolsheight=33&embed=1&file=index.ts)
 
 <br>
+
+⚠️⚠️ Don't forget to clear out states and sub-states by calling `.clear()` on them. A reference to
+sub-states will remain inside states until they are cleared out, which can lead to memory leaks.
+
+```ts
+const s = state([1, 2, 3, 4]);
+const one = state.sub(0);      // --> pun intended
+
+// ...
+
+one.clear();                   // --> when you are done with `one`
+
+// ...
+
+s.clear();                     // --> when you are done with `s`
+```
+
+
+<br><br>
 
 ## Contribution
 
