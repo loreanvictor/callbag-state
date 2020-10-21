@@ -24,7 +24,7 @@ console.log(s.get());
 
 ## Usage
 
-👉 Track the state via `.set()` and `.get()`:
+👉 Track the state and mutate it via `.set()` and `.get()`:
 ```ts
 import state from 'callbag-state';
 import subscribe from 'callbag-subscribe';
