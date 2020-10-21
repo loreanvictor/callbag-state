@@ -51,7 +51,6 @@ import subscribe from 'callbag-subscribe';
 const s = state({x : 42});
 const x = s.sub('x');
 subscribe(console.log)(s);
-subscribe(() => {})(x);
 
 x.set(43);
 x.set(x.get() + 1);
@@ -108,25 +107,9 @@ s.set([5, 2, 3, 4, 1]);
 ```
 [► TRY IT!](https://stackblitz.com/edit/callbag-state-demo6?devtoolsheight=33&embed=1&file=index.ts)
 
+<br><br>
+
 ## Gotchas
-
-⚠️⚠️ A state (or one of its descendants) must be subscribed to in order for its value to be tracked properly:
-```ts
-// WRONG:
-const s = state(...)
-const x = s.sub('x')
-s.set(...)
-x.get()      // --> will be old value
-```
-```ts
-// CORRECT:
-...
-subscribe(() => {})(x);
-s.set(...)
-x.get()     // --> value is now tracked
-```
-
-<br>
 
 ⚠️⚠️ Don't change an object without changing its reference:
 ```ts
@@ -147,6 +130,25 @@ s.sub(s.get().length).set(5)
 [► TRY IT!](https://stackblitz.com/edit/callbag-state-demo5?devtoolsheight=33&embed=1&file=index.ts)
 
 <br>
+
+⚠️⚠️ Don't forget to clear out states and sub-states by calling `.clear()` on them. A reference to
+sub-states will remain inside states until they are cleared out, which can lead to memory leaks.
+
+```ts
+const s = state([1, 2, 3, 4]);
+const one = state.sub(0);      // --> pun intended
+
+// ...
+
+one.clear();                   // --> when you are done with `one`
+
+// ...
+
+s.clear();                     // --> when you are done with `s`
+```
+
+
+<br><br>
 
 ## Contribution
 
