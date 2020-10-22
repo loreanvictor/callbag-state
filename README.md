@@ -131,20 +131,18 @@ s.sub(s.get().length).set(5)
 
 <br>
 
-⚠️⚠️ Don't forget to clear out states and sub-states by calling `.clear()` on them. A reference to
-sub-states will remain inside states until they are cleared out, which can lead to memory leaks.
+⚠️⚠️ States and sub-states don't track values unless they (or one of their sub-states) are subscribed to.
 
 ```ts
-const s = state([1, 2, 3, 4]);
-const one = state.sub(0);      // --> pun intended
+const s = state(42);
+console.log(s.get()); // > 42
 
-// ...
+s.set(43);
+console.log(s.get()); // > 42 !! --> not subscribed to
 
-one.clear();                   // --> when you are done with `one`
-
-// ...
-
-s.clear();                     // --> when you are done with `s`
+subscribe(() => ...)(s);
+s.set(43);
+console.log(s.get()); // > 43
 ```
 
 

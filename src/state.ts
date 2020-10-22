@@ -18,15 +18,6 @@ export function makeState<T>(
   let value = initial;
   let talkback: any = undefined;
 
-  downstream(_Start, (t: MsgType, _m?: any) => {
-    if (t === _Start) { talkback = _m; }
-    else if (t === _Data) {
-      const change = postTrace<T>(_m);
-      if (change.value !== value) { value = change.value!!; }
-      broadcast(_Data, change, sinks);
-    } else if (t === _End) { terminate(_m); }
-  });
-
   const terminate = (err?: any) => {
     broadcast(_End, err, sinks);
     sinks.length = 0;
@@ -45,8 +36,20 @@ export function makeState<T>(
         if (t === _End) {
           const index = sinks.indexOf(sink);
           if (index >= 0) { sinks.splice(index, 1); }
+          if (sinks.length === 0) { terminate(); }
         }
       });
+
+      if (sinks.length === 1) {
+        downstream(_Start, (t: MsgType, _m?: any) => {
+          if (t === _Start) { talkback = _m; }
+          else if (t === _Data) {
+            const change = postTrace<T>(_m);
+            if (change.value !== value) { value = change.value!!; }
+            broadcast(_Data, change, sinks);
+          } else if (t === _End) { terminate(_m); }
+        });
+      }
     }
   };
 

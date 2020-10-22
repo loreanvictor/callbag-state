@@ -33,11 +33,11 @@ describe('state', () => {
     })(s);
   });
 
-  it('should track its most recent values if is root state.', () => {
+  it('should track its most recent values if is root state and subscribed.', () => {
     const s = state(41);
     s.get()!!.should.equal(41);
     s.set(42);
-    s.get()!!.should.equal(42);
+    s.get()!!.should.equal(41); // --> not subscribed
     subscribe(() => {})(s);
     s.set(43);
     s.get()!!.should.equal(43);
@@ -79,7 +79,7 @@ describe('state', () => {
     const s = makeState(42, d, () => {});
     s.get()!!.should.equal(42);
     d(1, { value: 43, trace: { from: 42, to: 43 } });
-    s.get()!!.should.equal(43);
+    s.get()!!.should.equal(42);      // --> not subscribed
     subscribe(() => {})(s);
     d(1, { value: 44, trace: { from: 43, to: 44 } });
     s.get()!!.should.equal(44);
@@ -210,6 +210,7 @@ describe('state', () => {
       }
     }, () => {});
 
+    subscribe(() => {})(s);
     s.clear();
   });
 
