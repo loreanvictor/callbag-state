@@ -1,4 +1,4 @@
-import { Source, Sink, START, DATA, END } from 'callbag';
+import { Source, Sink, START, DATA, END, Callbag } from 'callbag';
 
 
 export type ChangeTraceLeaf<T> = {
@@ -28,7 +28,7 @@ export type Upstream<T> = Sink<Change<T>>;
 
 export type MsgType = START | DATA | END ;
 
-export type SubState<T, K extends keyof T> = Source<T[K] | undefined> & Sink<T[K]> & {
+export type SubState<T, K extends keyof T> = Callbag<T[K], T[K] | undefined> & {
   get(): T[K] | undefined;
   set(t: T[K]): void;
   clear(): void;
@@ -37,7 +37,7 @@ export type SubState<T, K extends keyof T> = Source<T[K] | undefined> & Sink<T[K
   sub<K2 extends keyof T[K]>(key: K2): SubState<T[K], K2>;
 };
 
-export type State<T> = Source<T> & Sink<T> & {
+export type State<T> = Callbag<T, T> & {
   get(): T;
   set(t: T): void;
   clear(): void;

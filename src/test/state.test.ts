@@ -46,7 +46,7 @@ describe('state', () => {
   it('should emit its values when root state.', () => {
     const r : number[] = [];
     const s = state(41);
-    pipe(s, subscribe((v: number) => r.push(v!!)));
+    pipe(s, subscribe(v => r.push(v!!)));
     s.set(42);
     s.set(43);
     s.set(42);
@@ -58,7 +58,7 @@ describe('state', () => {
     const r : Change<number>[] = [];
     const s = state(42);
     const change = { value: 45, trace: { from: 42, to: 45 } };
-    pipe(s.downstream(), subscribe((c: any) => r.push(c)));
+    pipe(s.downstream(), subscribe(c => r.push(c)));
     s.upstream()(1, change);
     r[0].should.eql(change);
   });
@@ -67,7 +67,7 @@ describe('state', () => {
     const d = makeSubject();
     const s = makeState(42, d, () => {});
     const r : number[] = [];
-    pipe(s, subscribe((v: number) => r.push(v!!)));
+    pipe(s, subscribe(v => r.push(v!!)));
 
     d(1, { value: 43, trace: { from: 42, to: 43 } });
     d(1, { value: 44, trace: { from: 43, to: 44 } });
@@ -215,7 +215,7 @@ describe('state', () => {
   });
 
   it('should ignore non-start messages on its downstream.', () => {
-    state(2).downstream()(1);
+    state(2).downstream()(1 as any);
   });
 
   it('should be ok with subscribers mistakenly unsubbing multiple times.', () => {
