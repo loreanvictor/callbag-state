@@ -6,13 +6,18 @@ import map from 'callbag-map';
 import subscribe from 'callbag-subscribe';
 
 
-const s = state([42, 43, 44]);
-const x = s.sub(0);
+const count = 1000;
+const l: number[] = [];
 
-pipe(
-  x,
-  map(l => l!! * 2),
-  subscribe(console.log)
-);
+for (let i = 0; i < count; i++) {
+  l.push(i);
+}
 
-x.set(45);
+const s = state(l);
+const x: any[] = [];
+
+for (let i = 0; i < count; i++) {
+  x.push(s.sub(i));
+}
+
+setInterval(() => {}, 1000);

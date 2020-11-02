@@ -26,7 +26,8 @@ export function isLeaf<T>(c: ChangeTrace<T> | undefined): c is ChangeTraceLeaf<T
 export type Downstream<T> = Source<Change<T>>;
 export type Upstream<T> = Sink<Change<T>>;
 
-export type MsgType = START | DATA | END ;
+export type MsgType = START | DATA | END;
+export type StateMsgType = MsgType | typeof _Latest | typeof _Downstream | typeof _Upstream;
 
 export type SubState<T, K extends keyof T> = Callbag<T[K], T[K] | undefined> & {
   get(): T[K] | undefined;
@@ -60,3 +61,6 @@ export function isState<T>(cb: Source<T>): cb is State<T> {
 export const _Start = 0;
 export const _Data = 1;
 export const _End = 2;
+export const _Latest = 100;
+export const _Downstream = 101;
+export const _Upstream = 102;
