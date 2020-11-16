@@ -85,7 +85,12 @@ function _state<T>(this: Profile<T>, _d: Downstream<Change<T>>, type: StateMsgTy
     const sink = m as Sink<T | undefined>;
     _d(_Start, _sgreeter.bind(this, sink));
   }
-  else if (type === _Data) { this.upstream(_Data, { value: m, trace: { from: this.value, to: m }}); }
+  else if (type === _Data) {
+    this.upstream(_Data, { value: m, trace: { from: this.value, to: m }});
+    if (this.sinks.length === 0) {
+      this.value = m;
+    }
+  }
   else if (type === _End) {
     this.upstream(_End, m);
     terminate(this.sinks, this.talkback, m);

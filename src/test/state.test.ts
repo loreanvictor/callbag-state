@@ -37,7 +37,7 @@ describe('state', () => {
     const s = state(41);
     s.get()!!.should.equal(41);
     s.set(42);
-    s.get()!!.should.equal(41); // --> not subscribed
+    s.get()!!.should.equal(42); // --> not subscribed
     subscribe(() => {})(s);
     s.set(43);
     s.get()!!.should.equal(43);
