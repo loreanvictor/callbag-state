@@ -26,7 +26,7 @@ function sub<T, K extends keyof T>(this: State<T>, k: K) {
   const _sub: SubState<T, K> = makeState(
     this.get() ? this.get()[k] : undefined,
     subDownstream(this.downstream(), k, () => _sub.get()),
-    subUpstream(this.upstream(), k, this.get()),
+    subUpstream(this.upstream(), k, () => this.get()),
   );
 
   return _sub;

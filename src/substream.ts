@@ -30,15 +30,16 @@ export function subDownstream<T, K extends keyof T>(src: Downstream<T>, key: K, 
 }
 
 
-export function subUpstream<T, K extends keyof T>(src: Upstream<T>, key: K, ref: T | undefined)
+export function subUpstream<T, K extends keyof T>(src: Upstream<T>, key: K, ref: () => T | undefined)
 : Upstream<T[K]> {
   return (type: MsgType, m?: any) => {
     if (type === _Data) {
       const change = m as Change<T[K]>;
-      if (ref) { ref[key] = change.value!!; }
+      const _ref = ref();
+      if (_ref) { _ref[key] = change.value!!; }
 
       src(_Data, {
-        value: ref,
+        value: _ref,
         trace: {
           subs: {
             [key]: change.trace

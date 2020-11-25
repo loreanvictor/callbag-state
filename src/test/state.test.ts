@@ -376,5 +376,15 @@ describe('state', () => {
       const s = state([{x: 1}, {x: 2}]);
       s.sub(2).sub('x').set(3);
     });
+
+    it('should not break change history of parent when changed.', () => {
+      const s = state<any>({a: 1, b: 1});
+      const b = s.sub('b');
+      subscribe(() => {})(s);
+
+      s.set({a: 2, b: 2});
+      b.set(3);
+      s.get().should.eql({a: 2, b: 3});
+    });
   });
 });
