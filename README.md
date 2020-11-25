@@ -135,20 +135,7 @@ s.sub(s.get().length).set(5)
 
 <br>
 
-⚠️⚠️ States and sub-states don't track values unless they (or one of their sub-states) are subscribed to.
-
-```ts
-const s = state(42);
-console.log(s.get()); // > 42
-
-s.set(43);
-console.log(s.get()); // > 42 !! --> not subscribed to
-
-subscribe(() => ...)(s);
-s.set(43);
-console.log(s.get()); // > 43
-```
-
+⚠️⚠️ Only pass plain objects! Specifically, passing objects with circular references might result in stack-overflow!
 
 <br><br>
 
