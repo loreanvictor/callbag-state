@@ -34,12 +34,11 @@ export type StateLike<T> = Callbag<T, T | undefined> & {
   set(t: T): void;
   clear(): void;
   sub<K extends keyof T>(key: K): SubState<T, K>;
+  downstream(): Downstream<T | undefined>;
+  upstream(): Upstream<T>;
 };
 
-export type SubState<T, K extends keyof T> = StateLike<T[K]> & {
-  downstream(): Downstream<T[K] | undefined>;
-  upstream(): Upstream<T[K]>;
-};
+export type SubState<T, K extends keyof T> = StateLike<T[K]>;
 
 export type State<T> = Callbag<T, T> & {
   get(): T;
