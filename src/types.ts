@@ -30,7 +30,7 @@ export type MsgType = START | DATA | END;
 export type StateMsgType = MsgType | typeof _Latest | typeof _Downstream | typeof _Upstream;
 
 export type StateLike<T> = Callbag<T, T | undefined> & {
-  get(): T;
+  get(): T | undefined;
   set(t: T): void;
   clear(): void;
   sub<K extends keyof T>(key: K): SubState<T, K>;
@@ -41,8 +41,11 @@ export type SubState<T, K extends keyof T> = StateLike<T[K]> & {
   upstream(): Upstream<T[K]>;
 };
 
-export type State<T> = StateLike<T> & {
+export type State<T> = Callbag<T, T> & {
   get(): T;
+  set(t: T): void;
+  clear(): void;
+  sub<K extends keyof T>(key: K): SubState<T, K>;
   downstream(): Downstream<T>;
   upstream(): Upstream<T>;
 };
