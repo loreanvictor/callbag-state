@@ -4,7 +4,7 @@ export {
   Change, ChangeTrace,
   ChangeTraceLeaf, ChangeTraceNode, isLeaf,
   Downstream, Upstream,
-  State, isState, SubState,
+  StateLike, State, isState, SubState,
   MsgType, _Start, _Data, _End,
 } from './types';
 export { broadcast } from './util/broadcast';

@@ -29,22 +29,22 @@ export type Upstream<T> = Sink<Change<T>>;
 export type MsgType = START | DATA | END;
 export type StateMsgType = MsgType | typeof _Latest | typeof _Downstream | typeof _Upstream;
 
-export type SubState<T, K extends keyof T> = Callbag<T[K], T[K] | undefined> & {
-  get(): T[K] | undefined;
-  set(t: T[K]): void;
-  clear(): void;
-  downstream(): Downstream<T[K] | undefined>;
-  upstream(): Upstream<T[K]>;
-  sub<K2 extends keyof T[K]>(key: K2): SubState<T[K], K2>;
-};
-
-export type State<T> = Callbag<T, T> & {
+export type StateLike<T> = Callbag<T, T | undefined> & {
   get(): T;
   set(t: T): void;
   clear(): void;
+  sub<K extends keyof T>(key: K): SubState<T, K>;
+};
+
+export type SubState<T, K extends keyof T> = StateLike<T[K]> & {
+  downstream(): Downstream<T[K] | undefined>;
+  upstream(): Upstream<T[K]>;
+};
+
+export type State<T> = StateLike<T> & {
+  get(): T;
   downstream(): Downstream<T>;
   upstream(): Upstream<T>;
-  sub<K extends keyof T>(key: K): SubState<T, K>;
 };
 
 export function isState<T>(cb: Source<T>): cb is State<T> {
