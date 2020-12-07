@@ -195,9 +195,15 @@ function _sgreeter<T>(this: Profile<T>, sink: Sink<T | undefined>, t: MsgType, m
 //
 // ⚠️ internal implementation thingy ⚠️
 //
-// represents the core callbag of each state.
+// represents the core callbag of each state. this could have been an anonymous
+// function within the context of `makeState()`'s implicit closure, however it is kept
+// as a shared bound function for better memory consumption.
 //
-// TODO: complete these comments.
+// alongside the profile, this guy also needs the state downstream (the modified downstream,
+// see `_downstream()` and `_dsgreeter()`). it will simply hook up sinks to that downstream,
+// pass incoming changes to the upstream, and terminates everything when receives a terminate
+// signal.
+//
 // TODO: shouldn't `_d` be `Downstream<T>`? 🤦
 //
 function _state<T>(this: Profile<T>, _d: Downstream<Change<T>>, type: StateMsgType, m?: any) {
@@ -222,9 +228,15 @@ function _state<T>(this: Profile<T>, _d: Downstream<Change<T>>, type: StateMsgTy
 }
 
 
-//
-// TODO: add comments for this fella
-//
+/**
+ *
+ * builds a state using given initial value, downstream and upstream.
+ *
+ * @param initial is the initial value of the state
+ * @param downstream is the source dictating changes to the state
+ * @param upstream is the sink that (potential) changes to the state are communicated to
+ *
+ */
 export function makeState<T>(initial: T, downstream: Downstream<T>, upstream: Upstream<T>): State<T>;
 export function makeState<T, K extends keyof T>
   (initial: T[K] | undefined, downstream: Downstream<T[K] | undefined>, upstream: Upstream<T[K]>): SubState<T, K>;
