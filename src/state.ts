@@ -90,10 +90,7 @@ function sub<T, K extends keyof T>(this: State<T>, k: K) {
 // it explicit.
 //
 interface Profile<T> {
-  //
-  // TODO: shouldn't this be `Downstream<T>`? 🤦
-  //
-  downstream: Downstream<Change<T>>;  // 👉 this is the provided downstream, not state's downstream
+  downstream: Downstream<T>;          // 👉 this is the provided downstream, not state's downstream
   upstream: Upstream<T>;              // 👉 this is the provided upstream, which is the same as state's upstream
   sinks: Sink<Change<T>>[];           // 👉 a list of all sinks (listening to state's downstream)
   value: T;                           // 👉 latest value of the state
@@ -154,16 +151,16 @@ function _downstream<T>(this: Profile<T>, type: MsgType, m?: any) {
     //
     sink(_Start, _dsgreeter.bind(this, sink));
 
-    if (this.sinks.length === 1) {                         // 👉 first sink, lets connect to downstream (basically ref counting here)
+    if (this.sinks.length === 1) {          // 👉 first sink, lets connect to downstream (basically ref counting here)
       this.downstream(_Start, (t: MsgType, _m?: any) => {
         if (t === _Start) {
           this.talkback = _m;
         } else if (t === _Data) {
-          const change = postTrace<T>(_m);                 // 👉 post-trace changes to know in detail what happens at further depths
+          const change = postTrace<T>(_m);  // 👉 post-trace changes to know in detail what happens at further depths
           if (change.value !== this.value) {
-            this.value = change.value!!;                   // 👉 update the state's value based on the incoming change
+            this.value = change.value!!;    // 👉 update the state's value based on the incoming change
           }
-          broadcast(_Data, change, this.sinks);            // 👉 broadcast the change to all sinks
+          broadcast(_Data, change, this.sinks); // 👉 broadcast the change to all sinks
         } else if (t === _End) {
           terminate(this.sinks, this.talkback, _m);
           this.talkback = undefined;
@@ -186,7 +183,7 @@ function _sgreeter<T>(this: Profile<T>, sink: Sink<T | undefined>, t: MsgType, m
     sink(_Start, m);           // 👉 pass on greetings from state's downstream
     sink(_Data, this.value);   // 👉 provide the sink with latest value as well
   } else if (t === _Data) {
-    sink(_Data, m.value);      // 👉 pass on the value of incoming changes to the sink                
+    sink(_Data, m.value);      // 👉 pass on the value of incoming changes to the sink
   } else if (t === _End) {
     sink(_End, m);
   }
@@ -204,9 +201,7 @@ function _sgreeter<T>(this: Profile<T>, sink: Sink<T | undefined>, t: MsgType, m
 // pass incoming changes to the upstream, and terminates everything when receives a terminate
 // signal.
 //
-// TODO: shouldn't `_d` be `Downstream<T>`? 🤦
-//
-function _state<T>(this: Profile<T>, _d: Downstream<Change<T>>, type: StateMsgType, m?: any) {
+function _state<T>(this: Profile<T>, _d: Downstream<T>, type: StateMsgType, m?: any) {
   if (type === _Start) {
     const sink = m as Sink<T | undefined>;
     _d(_Start, _sgreeter.bind(this, sink));

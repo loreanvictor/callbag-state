@@ -16,7 +16,7 @@
     "prefer-const": true,
     "deprecation": true,
     "invalid-void": true,
-    "max-file-line-count": [true, 256],
+    "max-file-line-count": [true, 300],
     "max-line-length": [true, 120],
     "no-inferrable-types": true,
     "eofline": true,
