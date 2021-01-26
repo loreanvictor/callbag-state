@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 // tslint:disable: no-magic-numbers
 // tslint:disable: max-file-line-count
 // tslint:disable: no-unused-expression
@@ -6,7 +7,7 @@ import { should, expect } from 'chai'; should();
 import { cloneDeep } from 'lodash';
 import subscribe from 'callbag-subscribe';
 import pipe from 'callbag-pipe';
-const makeSubject = require('callbag-subject');
+import makeSubject from 'callbag-subject';
 
 import { state } from '../index';
 import { makeState } from '../state';
@@ -20,7 +21,7 @@ describe('state', () => {
 
   it('should initialize with given initial value.', () => {
     const s = state(42);
-    s.get()!!.should.equal(42);
+    s.get()!.should.equal(42);
   });
 
   it('should emit proper initial value.', done => {
@@ -35,18 +36,18 @@ describe('state', () => {
 
   it('should track its most recent values if is root state and subscribed.', () => {
     const s = state(41);
-    s.get()!!.should.equal(41);
+    s.get()!.should.equal(41);
     s.set(42);
-    s.get()!!.should.equal(42); // --> not subscribed
+    s.get()!.should.equal(42); // --> not subscribed
     subscribe(() => {})(s);
     s.set(43);
-    s.get()!!.should.equal(43);
+    s.get()!.should.equal(43);
   });
 
   it('should emit its values when root state.', () => {
     const r : number[] = [];
     const s = state(41);
-    pipe(s, subscribe(v => r.push(v!!)));
+    pipe(s, subscribe(v => r.push(v!)));
     s.set(42);
     s.set(43);
     s.set(42);
@@ -64,10 +65,10 @@ describe('state', () => {
   });
 
   it('should emit values received from downstream.', () => {
-    const d = makeSubject();
+    const d = makeSubject<Change<number>>();
     const s = makeState(42, d, () => {});
     const r : number[] = [];
-    pipe(s, subscribe(v => r.push(v!!)));
+    pipe(s, subscribe(v => r.push(v!)));
 
     d(1, { value: 43, trace: { from: 42, to: 43 } });
     d(1, { value: 44, trace: { from: 43, to: 44 } });
@@ -75,19 +76,19 @@ describe('state', () => {
   });
 
   it('should keep its value in sync with latest incoming changes from downstream.', () => {
-    const d = makeSubject();
+    const d = makeSubject<Change<number>>();
     const s = makeState(42, d, () => {});
-    s.get()!!.should.equal(42);
+    s.get()!.should.equal(42);
     d(1, { value: 43, trace: { from: 42, to: 43 } });
-    s.get()!!.should.equal(42);      // --> not subscribed
+    s.get()!.should.equal(42);      // --> not subscribed
     subscribe(() => {})(s);
     d(1, { value: 44, trace: { from: 43, to: 44 } });
-    s.get()!!.should.equal(44);
+    s.get()!.should.equal(44);
   });
 
   it('should send received values up its upstream.', () => {
     const r : Change<number>[] = [];
-    const d = makeSubject();
+    const d = makeSubject<Change<number>>();
     const s = makeState(42, d, (t: any, m: any) => {
       if (t === 1) {
         r.push(m); d(1, m);
@@ -163,8 +164,8 @@ describe('state', () => {
     const r: number[] = [];
     const s = state({x: 42});
     const sub = s.sub('x');
-    pipe(sub, subscribe((n: number) => r.push(n!!)));
-    pipe(sub, subscribe((n: number) => r.push(n!!)));
+    pipe(sub, subscribe(n => r.push(n!)));
+    pipe(sub, subscribe(n => r.push(n!)));
 
     s.set({x : 43});
     r.should.eql([42, 42, 43, 43]);
@@ -225,17 +226,17 @@ describe('state', () => {
   });
 
   it('should handle weird messages from downstream.', () => {
-    const d = makeSubject();
+    const d = makeSubject<Change<number>>();
     subscribe(() => {})(makeState(42, d, () => {}));
 
-    d(23);
+    d(23 as any);
   });
 
   it('should handle weird messages.', () => { state(42)(42 as any); });
 
   describe('.sub()', () => {
     it('should set the initial value correctly based given key and its own value.', () => {
-      state('hellow').sub(1).get()!!.should.equal('e');
+      state('hellow').sub(1).get()!.should.equal('e');
     });
 
     it('should set initial value to `undefined` when the key cannot be found in value.', () => {
@@ -280,7 +281,7 @@ describe('state', () => {
 
     it('should route changes addressing the same key to the sub-state downstream.', () => {
       const r : Change<number>[] = [];
-      const d = makeSubject();
+      const d = makeSubject<Change<number[]>>();
       const s = makeState([42, 43], d, () => {});
       subscribe((c: any) => r.push(c))(s.sub(0).downstream());
       d(1, { value: [45, 43], trace: { subs: { 0: { from: 42, to: 45 }} }});
@@ -290,7 +291,7 @@ describe('state', () => {
 
     it('should not route changes not addressing the same key to the sub-state downstream.', () => {
       const r : Change<number>[] = [];
-      const d = makeSubject();
+      const d = makeSubject<Change<number[]>>();
       const s = makeState([42, 43], d, () => {});
       subscribe((c: any) => r.push(c))(s.sub(1).downstream());
       d(1, { value: [45, 43], trace: { subs: { 0: { from: 42, to: 45 } } }});
@@ -299,7 +300,7 @@ describe('state', () => {
 
     it('should properly adapt the trace of changes addressing a sub-state.', () => {
       const r : Change<{num: number}>[] = [];
-      const d = makeSubject();
+      const d = makeSubject<Change<{num: number}[]>>();
       const s = makeState([{ num: 42 }, { num: 43 }], d, () => {});
       subscribe((c: any) => r.push(c))(s.sub(0).downstream());
       d(1, {
@@ -323,27 +324,29 @@ describe('state', () => {
 
     it('should route changes without a trace that mutate sub-state value to sub-state downstream.', () => {
       const r : Change<number>[] = [];
-      const d = makeSubject();
+      const d = makeSubject<Change<number[]>>();
       const s = makeState([42, 43], d, () => {});
       subscribe((c: any) => r.push(c))(s.sub(0).downstream());
       d(1, { value: [45, 43], trace: { from: [42, 43], to: [45, 43] }});
       expect(r[0].value).to.equal(45);
     });
 
-    it('should not route changes without a trace that do not mutate sub-state value to sub-state downstream.',
+    it(
+      'should not route changes without a trace that do not mutate sub-state value to sub-state downstream.',
       () => {
-      const r : Change<number>[] = [];
-      const d = makeSubject();
-      const s = makeState([42, 43], d, () => {});
-      subscribe((c: any) => r.push(c))(s.sub(1).downstream());
-      d(1, { value: [45, 43], trace: { from: [42, 43], to: [45, 43] } });
-      r.length.should.equal(0);
-    });
+        const r : Change<number>[] = [];
+        const d = makeSubject<Change<number[]>>();
+        const s = makeState([42, 43], d, () => {});
+        subscribe((c: any) => r.push(c))(s.sub(1).downstream());
+        d(1, { value: [45, 43], trace: { from: [42, 43], to: [45, 43] } });
+        r.length.should.equal(0);
+      }
+    );
 
     it('should set the value of undefined for sub-sub-states for changes that make the sub-state undefined.', () => {
       const r : (number | undefined)[] = [];
       const s = state([{num: 42}, {num: 43}]);
-      pipe(s.sub(1).sub('num'), subscribe((v: number) => r.push(v)));
+      pipe(s.sub(1).sub('num'), subscribe(v => r.push(v)));
       s.set([{num: 45}]);
       r.should.eql([43, undefined]);
     });

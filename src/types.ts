@@ -57,7 +57,7 @@ export function isState<T>(cb: Source<T>): cb is State<T> {
     && (cb as any).downstream && typeof (cb as any).downstream === 'function' && (cb as any).downstream.length === 0
     && (cb as any).upstream && typeof (cb as any).upstream === 'function' && (cb as any).upstream.length === 0
     && (cb as any).sub && typeof (cb as any).sub === 'function' && (cb as any).sub.length === 1
-    ;
+  ;
 }
 
 export const _Start = 0;

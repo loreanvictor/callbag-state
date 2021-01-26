@@ -22,8 +22,8 @@ export function trace<T>(src: T, dest: T): ChangeTrace<T> | undefined {
       seen.add(key);
       const subTrace = trace(src[key], dest[key]);
       if (subTrace) {
-       (tr.subs as any)[key] = subTrace;
-       changed = true;
+        (tr.subs as any)[key] = subTrace;
+        changed = true;
       }
     }
 
@@ -74,5 +74,6 @@ export function postTrace<T>(_change: Change<T>) {
       } as Change<T>;
     }
   }
+
   return _change;
 }

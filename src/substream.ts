@@ -36,7 +36,7 @@ export function subUpstream<T, K extends keyof T>(src: Upstream<T>, key: K, ref:
     if (type === _Data) {
       const change = m as Change<T[K]>;
       const _ref = ref();
-      if (_ref) { _ref[key] = change.value!!; }
+      if (_ref) { _ref[key] = change.value!; }
 
       src(_Data, {
         value: _ref,

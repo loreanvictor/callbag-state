@@ -2,9 +2,9 @@ import { Sink } from 'callbag';
 
 import { subDownstream, subUpstream } from './substream';
 import { State, Downstream, Upstream,
-         MsgType, _Start, _Data, _End, Change,
-         SubState, _Latest, StateMsgType,
-         _Downstream, _Upstream } from './types';
+  MsgType, _Start, _Data, _End, Change,
+  SubState, _Latest, StateMsgType,
+  _Downstream, _Upstream } from './types';
 import { broadcast } from './util/broadcast';
 import { postTrace } from './trace';
 
@@ -158,7 +158,7 @@ function _downstream<T>(this: Profile<T>, type: MsgType, m?: any) {
         } else if (t === _Data) {
           const change = postTrace<T>(_m);  // 👉 post-trace changes to know in detail what happens at further depths
           if (change.value !== this.value) {
-            this.value = change.value!!;    // 👉 update the state's value based on the incoming change
+            this.value = change.value!;     // 👉 update the state's value based on the incoming change
           }
           broadcast(_Data, change, this.sinks); // 👉 broadcast the change to all sinks
         } else if (t === _End) {
